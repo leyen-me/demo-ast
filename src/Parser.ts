@@ -14,6 +14,10 @@ export class Parser {
     this.currentToken = this.lexer.getNextToken();
   }
 
+  /**
+   * eat 函数用于消耗当前的 Token，并获取下一个 Token。
+   * @param tokenType 
+   */
   private eat(tokenType: TokenType) {
     if (this.currentToken.type === tokenType) {
       this.currentToken = this.lexer.getNextToken();
@@ -23,8 +27,10 @@ export class Parser {
   }
 
   /**
-   * factor 是一个数字或者一个括号表达式
-   * @returns number
+   * `factor` 函数用于解析和计算基本因子（如数字和括号中的表达式）。
+   * 
+    - 如果当前 Token 是数字，则返回其数值。
+    - 如果当前 Token 是左括号，则解析括号中的表达式，并返回其值。
    */
   private factor(): number {
     const token = this.currentToken;
@@ -45,8 +51,10 @@ export class Parser {
   }
 
   /**
-   * term 是一个乘法或者除法表达式
-   * @returns number
+   * `term` 函数用于解析和计算乘法和除法表达式。
+   * 
+    - 解析一个因子。
+    - 如果下一个 Token 是乘法或除法操作符，则继续解析下一个因子，并进行相应的计算。
    */
   private term(): number {
     let result = this.factor();
@@ -69,7 +77,10 @@ export class Parser {
   }
 
   /**
-   * expr
+   * `expr` 函数用于解析和计算加法和减法表达式。
+   * 
+    - 解析一个项（term）。
+    - 如果下一个 Token 是加法或减法操作符，则继续解析下一个项，并进行相应的计算。
    */
   private expr(): number {
     let result = this.term();
@@ -91,6 +102,13 @@ export class Parser {
     return result;
   }
 
+  /**
+   * `assignment` 函数用于解析和处理变量赋值语句。
+   * 
+    - 获取变量名。
+    - 消耗赋值操作符（`=`）。
+    - 解析赋值表达式，并将结果存储在变量表中。
+   */
   private assignment(): void {
     const varName = this.currentToken.value!;
     this.eat("IDENTIFIER");
@@ -99,6 +117,13 @@ export class Parser {
     this.variables[varName] = value;
   }
 
+  /**
+   * `statement` 函数用于解析和处理单个语句。
+   * 
+- 如果当前 Token 是 `let` 关键字，则解析变量声明和赋值语句。
+- 否则，解析表达式语句。
+- 消耗分号（`;`）。
+   */
   private statement(): void {
     if (this.currentToken.type === "LET") {
       this.eat("LET");
